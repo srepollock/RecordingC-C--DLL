@@ -13,13 +13,13 @@ namespace PlaySoundDLL_Working
 {
     public partial class AudioRecorder : Form
     {
-        [DllImport("C:\\Users\\IEUser\\Documents\\Visual/ Studio/ 2015\\Projects\\RecordingC-C--DLL\\PlaySoundDLL-Working")]
-        public static extern bool DlgProc(IntPtr hwnd, uint message, long wParam, uint lParam);
+        [DllImport("Recording.dll", EntryPoint = "DlgProc")]
+        public static extern bool DlgProc(IntPtr hwnd, uint message, int wParam, int lParam);
 
         public IntPtr handle = new IntPtr();
         public uint message;
-        public long wParam;
-        public uint lParam;
+        public int wParam;
+        public int lParam;
 
         public AudioRecorder()
         {
