@@ -28,15 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.ButtonPlanel = new System.Windows.Forms.Panel();
-            this.RecordButton = new System.Windows.Forms.Button();
-            this.StopRecordButton = new System.Windows.Forms.Button();
-            this.PlayButton = new System.Windows.Forms.Button();
             this.StopPlayingButton = new System.Windows.Forms.Button();
+            this.PlayButton = new System.Windows.Forms.Button();
+            this.StopRecordButton = new System.Windows.Forms.Button();
+            this.RecordButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.sampleChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.ButtonPlanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleChart)).BeginInit();
             this.SuspendLayout();
             // 
             // ButtonPlanel
@@ -51,25 +57,15 @@
             this.ButtonPlanel.Size = new System.Drawing.Size(443, 94);
             this.ButtonPlanel.TabIndex = 0;
             // 
-            // RecordButton
+            // StopPlayingButton
             // 
-            this.RecordButton.Location = new System.Drawing.Point(9, 9);
-            this.RecordButton.Name = "RecordButton";
-            this.RecordButton.Size = new System.Drawing.Size(75, 23);
-            this.RecordButton.TabIndex = 0;
-            this.RecordButton.Text = "Record";
-            this.RecordButton.UseVisualStyleBackColor = true;
-            this.RecordButton.Click += new System.EventHandler(this.RecordButton_Click);
-            // 
-            // StopRecordButton
-            // 
-            this.StopRecordButton.Location = new System.Drawing.Point(90, 9);
-            this.StopRecordButton.Name = "StopRecordButton";
-            this.StopRecordButton.Size = new System.Drawing.Size(75, 23);
-            this.StopRecordButton.TabIndex = 1;
-            this.StopRecordButton.Text = "Stop Recording";
-            this.StopRecordButton.UseVisualStyleBackColor = true;
-            this.StopRecordButton.Click += new System.EventHandler(this.StopRecordButton_Click);
+            this.StopPlayingButton.Location = new System.Drawing.Point(90, 38);
+            this.StopPlayingButton.Name = "StopPlayingButton";
+            this.StopPlayingButton.Size = new System.Drawing.Size(75, 23);
+            this.StopPlayingButton.TabIndex = 3;
+            this.StopPlayingButton.Text = "Stop Playing";
+            this.StopPlayingButton.UseVisualStyleBackColor = true;
+            this.StopPlayingButton.Click += new System.EventHandler(this.StopPlayingButton_Click);
             // 
             // PlayButton
             // 
@@ -81,15 +77,25 @@
             this.PlayButton.UseVisualStyleBackColor = true;
             this.PlayButton.Click += new System.EventHandler(this.PlayButton_Click);
             // 
-            // StopPlayingButton
+            // StopRecordButton
             // 
-            this.StopPlayingButton.Location = new System.Drawing.Point(90, 38);
-            this.StopPlayingButton.Name = "StopPlayingButton";
-            this.StopPlayingButton.Size = new System.Drawing.Size(75, 23);
-            this.StopPlayingButton.TabIndex = 3;
-            this.StopPlayingButton.Text = "Stop Playing";
-            this.StopPlayingButton.UseVisualStyleBackColor = true;
-            this.StopPlayingButton.Click += new System.EventHandler(this.StopPlayingButton_Click);
+            this.StopRecordButton.Location = new System.Drawing.Point(90, 9);
+            this.StopRecordButton.Name = "StopRecordButton";
+            this.StopRecordButton.Size = new System.Drawing.Size(75, 23);
+            this.StopRecordButton.TabIndex = 1;
+            this.StopRecordButton.Text = "Stop Recording";
+            this.StopRecordButton.UseVisualStyleBackColor = true;
+            this.StopRecordButton.Click += new System.EventHandler(this.StopRecordButton_Click);
+            // 
+            // RecordButton
+            // 
+            this.RecordButton.Location = new System.Drawing.Point(9, 9);
+            this.RecordButton.Name = "RecordButton";
+            this.RecordButton.Size = new System.Drawing.Size(75, 23);
+            this.RecordButton.TabIndex = 0;
+            this.RecordButton.Text = "Record";
+            this.RecordButton.UseVisualStyleBackColor = true;
+            this.RecordButton.Click += new System.EventHandler(this.RecordButton_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -108,11 +114,29 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.sampleChart);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 103);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(443, 244);
             this.panel1.TabIndex = 1;
+            // 
+            // sampleChart
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.sampleChart.ChartAreas.Add(chartArea1);
+            this.sampleChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend1.Name = "Legend1";
+            this.sampleChart.Legends.Add(legend1);
+            this.sampleChart.Location = new System.Drawing.Point(0, 0);
+            this.sampleChart.Name = "sampleChart";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.sampleChart.Series.Add(series1);
+            this.sampleChart.Size = new System.Drawing.Size(443, 244);
+            this.sampleChart.TabIndex = 0;
+            this.sampleChart.Text = "chart1";
             // 
             // AudioRecorder
             // 
@@ -124,6 +148,8 @@
             this.Text = "Audio Recorder";
             this.ButtonPlanel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.sampleChart)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -137,6 +163,7 @@
         private System.Windows.Forms.Button RecordButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart sampleChart;
     }
 }
 

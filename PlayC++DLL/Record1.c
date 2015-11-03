@@ -25,8 +25,7 @@ __declspec(dllexport) void CALLBACK ReverseMemory(BYTE * pBuffer, int iLength)
 
 __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static BOOL         bRecording, bPlaying, bReverse, bPaused,
-		bEnding, bTerminating;
+	static BOOL         bRecording, bPlaying, bReverse, bPaused, bEnding, bTerminating;
 	static DWORD        dwDataLength, dwRepetitions = 1;
 	static HWAVEIN      hWaveIn;
 	static HWAVEOUT     hWaveOut;
