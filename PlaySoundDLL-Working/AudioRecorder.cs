@@ -13,9 +13,13 @@ namespace PlaySoundDLL_Working
 {
     public partial class AudioRecorder : Form
     {
-        [DllImport("PlayC++Dll.dll")]
-        public static extern bool DlgProc(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
+        [DllImport("Recording.dll")]
+        public static extern bool DlgProc(IntPtr hwnd, uint message, long wParam, uint lParam);
 
+        public IntPtr handle = new IntPtr();
+        public uint message;
+        public long wParam;
+        public uint lParam;
 
         public AudioRecorder()
         {
@@ -29,23 +33,31 @@ namespace PlaySoundDLL_Working
         {
             StopRecordButton.Enabled = true;
             PlayButton.Enabled = false;
+            message = 1000; // Begin Recording
+            DlgProc(handle, message, wParam, lParam);
         }
 
         private void StopRecordButton_Click(object sender, EventArgs e)
         {
             PlayButton.Enabled = true;
             StopRecordButton.Enabled = false;
+            message = 1001; // End Recording
+            DlgProc(handle, message, wParam, lParam);
         }
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
             StopPlayingButton.Enabled = true;
+            message = 1002; // Begin Play
+            DlgProc(handle, message, wParam, lParam);
         }
 
         private void StopPlayingButton_Click(object sender, EventArgs e)
         {
             StopPlayingButton.Enabled = true;
             StopPlayingButton.Enabled = false;
+            message = 1004; // End Play
+            DlgProc(handle, message, wParam, lParam);
         }
     }
 }
