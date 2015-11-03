@@ -6,7 +6,13 @@ RECORD1.C -- Waveform Audio Recorder
 #include <windows.h>
 #include "Header.h"
 
-int WINAPI DllMain(HINSTANCE hInstance, DWORD fdwReason, PVOID pvReserved){
+HINSTANCE hInstanceDLL;
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID pvReserved){
+	if (fdwReason == DLL_PROCESS_ATTACH) {
+		hInstanceDLL = hModule;
+		DisableThreadLibraryCalls(hModule);
+	}
 	return TRUE;
 }
 
