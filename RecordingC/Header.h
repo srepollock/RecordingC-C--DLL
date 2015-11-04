@@ -2,6 +2,10 @@ TCHAR szAppName[] = TEXT("Record1");
 #define INP_BUFFER_SIZE 16384
 
 __declspec(dllexport) BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
+__declspec(dllexport) void recStart();
+__declspec(dllexport) void recStop();
+__declspec(dllexport) void playStart();
+__declspec(dllexport) void playStop();
 
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
