@@ -6,7 +6,7 @@ RECORD1.C -- Waveform Audio Recorder
 #include <windows.h>
 #include "Header.h"
 
-__declspec(dllexport) int WINAPI newWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+__declspec(dllexport) int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PSTR szCmdLine, int iCmdShow)
 {
 	if (-1 == DialogBox(hInstance, TEXT("Record"), NULL, DlgProc))
