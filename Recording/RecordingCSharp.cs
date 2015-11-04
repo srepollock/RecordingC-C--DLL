@@ -13,32 +13,44 @@ namespace Recording
 {
     public partial class RecordingCSharp : Form
     {
-        [DllImport("DlgProc", EntryPoint = "DlgProc")]
-        public static extern bool DlgProc(IntPtr hwnd, uint message, int wParam, int lParam);
+        //[DllImport("DlgProc", EntryPoint = "DlgProc")]
+        //public static extern bool DlgProc(IntPtr hwnd, uint message, int wParam, int lParam);
+
+        [DllImport("RecordingC.dll", EntryPoint="recStart")]
+        public static extern void recStart(IntPtr handle);
+        [DllImport("RecordingC.dll", EntryPoint = "recStop")]
+        public static extern void recStop(IntPtr handle);
+        [DllImport("RecordingC.dll", EntryPoint = "playStart")]
+        public static extern void playStart(IntPtr handle);
+        [DllImport("RecordingC.dll", EntryPoint = "playStop")]
+        public static extern void playStop(IntPtr handle);
+
+        private IntPtr handle;
 
         public RecordingCSharp()
         {
             InitializeComponent();
+            handle = this.Handle;
         }
 
         private void recButton_Click(object sender, EventArgs e)
         {
-            DlgProc(this.Handle, 0x0111, 1000, 0);
+            recStart(handle);
         }
 
         private void stopRecButton_Click(object sender, EventArgs e)
         {
-            DlgProc(this.Handle, 0x0111, 1001, 0);
+            recStop(handle);
         }
 
         private void playButton_Click(object sender, EventArgs e)
         {
-            DlgProc(this.Handle, 0x0111, 1002, 0);
+            playStart(handle);
         }
 
         private void stopPlayButton_Click(object sender, EventArgs e)
         {
-            DlgProc(this.Handle, 0x0111, 1003, 0);
+            playStop(handle);
         }
     }
 }
