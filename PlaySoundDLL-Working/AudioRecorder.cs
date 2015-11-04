@@ -13,8 +13,11 @@ namespace PlaySoundDLL_Working
 {
     public partial class AudioRecorder : Form
     {
-        [DllImport("Recording.dll", EntryPoint="DllMain")]
-        public static extern bool DllMain(IntPtr hInstance, ulong fdwReason, IntPtr pvReserved);
+        //[DllImport("Recording.dll", EntryPoint="DllMain")]
+        //public static extern bool DllMain(IntPtr hInstance, ulong fdwReason, IntPtr pvReserved);
+
+        [DllImport("RecordingC.dll", EntryPoint = "DlgProc")]
+        public static extern bool DlgProc(IntPtr hwnd, uint message, int wParam, int lParam);
 
         public IntPtr handle;
         public uint message = 0x0111;
@@ -35,7 +38,7 @@ namespace PlaySoundDLL_Working
             StopRecordButton.Enabled = true;
             PlayButton.Enabled = false;
             wParam = 1000; // Begin Recording
-            //DlgProc(handle, message, wParam, lParam);
+            DlgProc(handle, message, wParam, lParam);
         }
 
         private void StopRecordButton_Click(object sender, EventArgs e)
@@ -43,7 +46,7 @@ namespace PlaySoundDLL_Working
             PlayButton.Enabled = true;
             StopRecordButton.Enabled = false;
             wParam = 1001; // End Recording
-            //DlgProc(handle, message, wParam, lParam);
+            DlgProc(handle, message, wParam, lParam);
         }
 
         private void PlayButton_Click(object sender, EventArgs e)
@@ -51,7 +54,7 @@ namespace PlaySoundDLL_Working
             RecordButton.Enabled = false;
             StopPlayingButton.Enabled = true;
             wParam = 1002; // Begin Play
-            //DlgProc(handle, message, wParam, lParam);
+            DlgProc(handle, message, wParam, lParam);
 
         }
 
@@ -61,7 +64,7 @@ namespace PlaySoundDLL_Working
             StopPlayingButton.Enabled = true;
             StopPlayingButton.Enabled = false;
             wParam = 1004; // End Play
-            //DlgProc(handle, message, wParam, lParam);
+            DlgProc(handle, message, wParam, lParam);
         }
     }
 }
