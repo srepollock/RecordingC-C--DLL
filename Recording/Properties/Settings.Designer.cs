@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PlaySoundDLL_Working.Properties
+namespace Recording.Properties
 {
 
 

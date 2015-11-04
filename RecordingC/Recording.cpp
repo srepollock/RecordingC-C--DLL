@@ -6,9 +6,15 @@ RECORD1.C -- Waveform Audio Recorder
 #include <windows.h>
 #include "Header.h"
 
-HINSTANCE hInstanceDLL;
+#define INP_BUFFER_SIZE 16384
 
-__declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hInstance, DWORD fdwReason, LPVOID pvReserved){
+BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
+
+TCHAR szAppName[] = TEXT("Record1");
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	PSTR szCmdLine, int iCmdShow)
+{
 	if (-1 == DialogBox(hInstance, TEXT("Record"), NULL, DlgProc))
 	{
 		MessageBox(NULL, TEXT("This program requires Windows NT!"),
@@ -17,7 +23,7 @@ __declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hInstance, DWORD fdwReason, 
 	return 0;
 }
 
-__declspec(dllexport) void CALLBACK ReverseMemory(BYTE * pBuffer, int iLength)
+void ReverseMemory(BYTE * pBuffer, int iLength)
 {
 	BYTE b;
 	int  i;
@@ -30,7 +36,7 @@ __declspec(dllexport) void CALLBACK ReverseMemory(BYTE * pBuffer, int iLength)
 	}
 }
 
-__declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static BOOL         bRecording, bPlaying, bReverse, bPaused, bEnding, bTerminating;
 	static DWORD        dwDataLength, dwRepetitions = 1;
@@ -84,8 +90,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			waveform.nBlockAlign = 1;
 			waveform.wBitsPerSample = 8;
 			waveform.cbSize = 0;
-
-			// This is the microphone
 
 			if (waveInOpen(&hWaveIn, WAVE_MAPPER, &waveform,
 				(DWORD)hwnd, 0, CALLBACK_WINDOW))

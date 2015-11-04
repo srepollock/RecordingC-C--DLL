@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PlaySoundDLL_Working
+namespace Recording
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace PlaySoundDLL_Working
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AudioRecorder());
+            Application.Run(new RecordingCSharp());
         }
     }
 }
