@@ -13,17 +13,18 @@ namespace PlaySoundDLL_Working
 {
     public partial class AudioRecorder : Form
     {
-        [DllImport("Recording.dll", EntryPoint = "DlgProc")]
-        public static extern bool DlgProc(IntPtr hwnd, uint message, int wParam, int lParam);
+        [DllImport("Recording.dll", EntryPoint="DllMain")]
+        public static extern bool DllMain(IntPtr hInstance, ulong fdwReason, IntPtr pvReserved);
 
-        public IntPtr handle = new IntPtr();
-        public uint message;
+        public IntPtr handle;
+        public uint message = 0x0111;
         public int wParam;
         public int lParam;
 
         public AudioRecorder()
         {
             InitializeComponent();
+            handle = this.Handle;
             PlayButton.Enabled = false;
             StopRecordButton.Enabled = false;
             StopPlayingButton.Enabled = false;
@@ -33,31 +34,34 @@ namespace PlaySoundDLL_Working
         {
             StopRecordButton.Enabled = true;
             PlayButton.Enabled = false;
-            message = 1000; // Begin Recording
-            DlgProc(handle, message, wParam, lParam);
+            wParam = 1000; // Begin Recording
+            //DlgProc(handle, message, wParam, lParam);
         }
 
         private void StopRecordButton_Click(object sender, EventArgs e)
         {
             PlayButton.Enabled = true;
             StopRecordButton.Enabled = false;
-            message = 1001; // End Recording
-            DlgProc(handle, message, wParam, lParam);
+            wParam = 1001; // End Recording
+            //DlgProc(handle, message, wParam, lParam);
         }
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
+            RecordButton.Enabled = false;
             StopPlayingButton.Enabled = true;
-            message = 1002; // Begin Play
-            DlgProc(handle, message, wParam, lParam);
+            wParam = 1002; // Begin Play
+            //DlgProc(handle, message, wParam, lParam);
+
         }
 
         private void StopPlayingButton_Click(object sender, EventArgs e)
         {
+            RecordButton.Enabled = true;
             StopPlayingButton.Enabled = true;
             StopPlayingButton.Enabled = false;
-            message = 1004; // End Play
-            DlgProc(handle, message, wParam, lParam);
+            wParam = 1004; // End Play
+            //DlgProc(handle, message, wParam, lParam);
         }
     }
 }

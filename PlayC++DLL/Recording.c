@@ -8,12 +8,13 @@ RECORD1.C -- Waveform Audio Recorder
 
 HINSTANCE hInstanceDLL;
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID pvReserved){
-	if (fdwReason == DLL_PROCESS_ATTACH) {
-		hInstanceDLL = hModule;
-		DisableThreadLibraryCalls(hModule);
+__declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hInstance, DWORD fdwReason, LPVOID pvReserved){
+	if (-1 == DialogBox(hInstance, TEXT("Record"), NULL, DlgProc))
+	{
+		MessageBox(NULL, TEXT("This program requires Windows NT!"),
+			szAppName, MB_ICONERROR);
 	}
-	return TRUE;
+	return 0;
 }
 
 __declspec(dllexport) void CALLBACK ReverseMemory(BYTE * pBuffer, int iLength)
@@ -83,6 +84,8 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			waveform.nBlockAlign = 1;
 			waveform.wBitsPerSample = 8;
 			waveform.cbSize = 0;
+
+			// This is the microphone
 
 			if (waveInOpen(&hWaveIn, WAVE_MAPPER, &waveform,
 				(DWORD)hwnd, 0, CALLBACK_WINDOW))

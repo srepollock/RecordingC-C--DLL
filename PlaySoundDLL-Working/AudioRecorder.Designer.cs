@@ -59,7 +59,7 @@
             // 
             // StopPlayingButton
             // 
-            this.StopPlayingButton.Location = new System.Drawing.Point(90, 38);
+            this.StopPlayingButton.Location = new System.Drawing.Point(226, 38);
             this.StopPlayingButton.Name = "StopPlayingButton";
             this.StopPlayingButton.Size = new System.Drawing.Size(75, 23);
             this.StopPlayingButton.TabIndex = 3;
@@ -69,7 +69,7 @@
             // 
             // PlayButton
             // 
-            this.PlayButton.Location = new System.Drawing.Point(9, 38);
+            this.PlayButton.Location = new System.Drawing.Point(145, 38);
             this.PlayButton.Name = "PlayButton";
             this.PlayButton.Size = new System.Drawing.Size(75, 23);
             this.PlayButton.TabIndex = 2;
@@ -79,7 +79,7 @@
             // 
             // StopRecordButton
             // 
-            this.StopRecordButton.Location = new System.Drawing.Point(90, 9);
+            this.StopRecordButton.Location = new System.Drawing.Point(226, 9);
             this.StopRecordButton.Name = "StopRecordButton";
             this.StopRecordButton.Size = new System.Drawing.Size(75, 23);
             this.StopRecordButton.TabIndex = 1;
@@ -89,7 +89,7 @@
             // 
             // RecordButton
             // 
-            this.RecordButton.Location = new System.Drawing.Point(9, 9);
+            this.RecordButton.Location = new System.Drawing.Point(145, 9);
             this.RecordButton.Name = "RecordButton";
             this.RecordButton.Size = new System.Drawing.Size(75, 23);
             this.RecordButton.TabIndex = 0;
