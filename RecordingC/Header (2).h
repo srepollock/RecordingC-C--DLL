@@ -1,7 +1,8 @@
-TCHAR szAppName[] = TEXT("Record1");
-#define INP_BUFFER_SIZE 16384
-
+int WINAPI DllMain(HINSTANCE, DWORD, PVOID);
 __declspec(dllexport) BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
+
+#define INP_BUFFER_SIZE 16384
+TCHAR szAppName[] = TEXT("Record1");
 
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.

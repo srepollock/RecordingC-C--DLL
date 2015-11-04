@@ -6,13 +6,7 @@ RECORD1.C -- Waveform Audio Recorder
 #include <windows.h>
 #include "Header.h"
 
-#define INP_BUFFER_SIZE 16384
-
-BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
-
-TCHAR szAppName[] = TEXT("Record1");
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+__declspec(dllexport) int WINAPI newWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PSTR szCmdLine, int iCmdShow)
 {
 	if (-1 == DialogBox(hInstance, TEXT("Record"), NULL, DlgProc))
@@ -23,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	return 0;
 }
 
-void ReverseMemory(BYTE * pBuffer, int iLength)
+__declspec(dllexport) void ReverseMemory(BYTE * pBuffer, int iLength)
 {
 	BYTE b;
 	int  i;
@@ -36,7 +30,7 @@ void ReverseMemory(BYTE * pBuffer, int iLength)
 	}
 }
 
-BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+__declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static BOOL         bRecording, bPlaying, bReverse, bPaused, bEnding, bTerminating;
 	static DWORD        dwDataLength, dwRepetitions = 1;
