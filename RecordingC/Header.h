@@ -1,32 +1,53 @@
-TCHAR szAppName[] = TEXT("Record1");
+#pragma once
+#ifndef STDAFX_H
+//#include "targetver.h"
+#include <windows.h>
 #define INP_BUFFER_SIZE 16384
+#define IDC_RECORD_BEG 1001
+#define IDC_RECORD_END 1002
+#define IDC_PLAY_BEG 1003
+#define IDC_PLAY_PAUSE 1004
+#define IDC_PLAY_END 1005
+#define IDC_PLAY_REV 1006
+#define IDC_PLAY_REP 1007
+#define IDC_PLAY_SPEED 1008
+#define IDC_VOLUME_UP 1009
+#define IDC_VOLUME_DOWN 1010
+#define IDC_VOLUME_MUTE 1011
 
-__declspec(dllexport) BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
-__declspec(dllexport) void recStart();
-__declspec(dllexport) void recStop();
-__declspec(dllexport) void playStart();
-__declspec(dllexport) void playStop();
+#define EXPORT __declspec(dllexport)
 
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by Record.rc
-//
-#define IDC_RECORD_BEG                  1000
-#define IDC_RECORD_END                  1001
-#define IDC_PLAY_BEG                    1002
-#define IDC_PLAY_PAUSE                  1003
-#define IDC_PLAY_END                    1004
-#define IDC_PLAY_REV                    1005
-#define IDC_PLAY_REP                    1006
-#define IDC_PLAY_SPEED                  1007
+struct windHandle {
+	HWND hwnd;
+};
 
-// Next default values for new objects
-// 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1008
-#define _APS_NEXT_SYMED_VALUE           101
-#endif
+struct Data {
+	//pointer to data
+	PBYTE* data;
+	//size of data
+	int n;
+};
+
+static TCHAR szAppName[] = TEXT("HelloWin");
+static windHandle wndHwnd;
+static Data data;
+static DWORD dwVolume;
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+//INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+//int CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern "C" EXPORT int startProg(HINSTANCE hInstance);
+extern "C" EXPORT int sendQuit();
+extern "C" EXPORT int sendRec();
+extern "C" EXPORT int sendStopRec();
+extern "C" EXPORT int sendPlay();
+extern "C" EXPORT int sendPlayStop();
+extern "C" EXPORT int sendPlayPause();
+extern "C" EXPORT void getByteData();
+extern "C" EXPORT double getDataSize();
+extern "C" EXPORT int sendVolumeUp();
+extern "C" EXPORT int sendVolumeDown();
+
+static PBYTE pBuffer1, pBuffer2, pSaveBuffer, pNewBuffer;
+
 #endif

@@ -79,7 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Recording.c" />
+    <ClCompile Include="Recording.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header.h" />

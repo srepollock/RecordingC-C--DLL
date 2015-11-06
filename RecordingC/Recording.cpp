@@ -1,23 +1,133 @@
-/*----------------------------------------
-RECORD1.C -- Waveform Audio Recorder
-(c) Charles Petzold, 1998
-----------------------------------------*/
-
-#include <windows.h>
 #include "Header.h"
+#include <SDKDDKVer.h>
 
-/*
-__declspec(dllexport) int WINAPI RecMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	PSTR szCmdLine, int iCmdShow)
+BOOL APIENTRY DllMain(HMODULE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
 {
-	if (-1 == DialogBox(hInstance, TEXT("Record"), NULL, DlgProc))
+	switch (ul_reason_for_call)
 	{
-		MessageBox(NULL, TEXT("This program requires Windows NT!"),
-			szAppName, MB_ICONERROR);
+	case DLL_PROCESS_ATTACH:
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
+		break;
 	}
-	return 0;
+	return TRUE;
 }
-*/
+
+extern "C" {
+
+	EXPORT PBYTE getByteData() {
+		return pSaveBuffer;
+	}
+
+	EXPORT double getDataSize() {
+		double n;
+		//n = 
+		return n;
+	}
+
+	EXPORT int sendRec() {
+		WPARAM msg = MAKEWPARAM(IDC_RECORD_BEG, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+	EXPORT int sendStopRec() {
+		WPARAM msg = MAKEWPARAM(IDC_RECORD_END, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+
+	EXPORT int sendPlay() {
+		WPARAM msg = MAKEWPARAM(IDC_PLAY_BEG, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+	EXPORT int sendPlayPause() {
+		WPARAM msg = MAKEWPARAM(IDC_PLAY_PAUSE, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+
+	EXPORT int sendPlayStop() {
+		WPARAM msg = MAKEWPARAM(IDC_PLAY_END, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+
+	EXPORT int sendQuit() {
+		PostMessage(wndHwnd.hwnd, WM_DESTROY, 0, 0);
+		return 1;
+	}
+
+	EXPORT int sendVolumeUp() {
+		WPARAM msg = MAKEWPARAM(IDC_VOLUME_UP, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 1.2);
+		return 1;
+	}
+
+	EXPORT int sendVolumeDown() {
+		WPARAM msg = MAKEWPARAM(IDC_VOLUME_DOWN, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0.2);
+		return 1;
+	}
+
+	EXPORT int sendVolumeMute() {
+		WPARAM msg = MAKEWPARAM(IDC_VOLUME_MUTE, 0);
+		PostMessage(wndHwnd.hwnd, WM_COMMAND, msg, 0);
+		return 1;
+	}
+
+	EXPORT int startProg(HINSTANCE hInstance) {
+		static TCHAR szAppName[] = TEXT("HelloWin");
+		HWND         hwnd;
+		MSG          msg;
+		WNDCLASS     wndclass;
+
+		wndclass.style = CS_HREDRAW | CS_VREDRAW;
+		wndclass.lpfnWndProc = WndProc;
+		wndclass.cbClsExtra = 0;
+		wndclass.cbWndExtra = 0;
+		wndclass.hInstance = hInstance;
+		wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+		wndclass.lpszMenuName = NULL;
+		wndclass.lpszClassName = szAppName;
+
+		if (!RegisterClass(&wndclass))
+		{
+			MessageBox(NULL, TEXT("This program requires Windows NT!"),
+				szAppName, MB_ICONERROR);
+			return 0;
+		}
+
+		hwnd = CreateWindow(szAppName,  // window class name
+			TEXT("The Hello Program"),  // window caption
+			WS_OVERLAPPEDWINDOW,        // window style
+			CW_USEDEFAULT,              // initial x position
+			CW_USEDEFAULT,              // initial y position
+			CW_USEDEFAULT,              // initial x size
+			CW_USEDEFAULT,              // initial y size
+			NULL,                       // parent window handle
+			NULL,                       // window menu handle
+			hInstance,                  // program instance handle
+			NULL);                      // creation parameters
+
+									    //ShowWindow(hwnd, 1);
+		UpdateWindow(hwnd);
+
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		return msg.wParam;
+	}
+
+}
 
 void ReverseMemory(BYTE * pBuffer, int iLength)
 {
@@ -32,31 +142,37 @@ void ReverseMemory(BYTE * pBuffer, int iLength)
 	}
 }
 
-__declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static BOOL         bRecording, bPlaying, bReverse, bPaused, bEnding, bTerminating;
+	//HDC         hdc;
+	//PAINTSTRUCT ps;
+	//RECT        rect;
+
+	static BOOL         bRecording, bPlaying, bReverse, bPaused,
+		bEnding, bTerminating;
 	static DWORD        dwDataLength, dwRepetitions = 1;
 	static HWAVEIN      hWaveIn;
 	static HWAVEOUT     hWaveOut;
-	static PBYTE        pBuffer1, pBuffer2, pSaveBuffer, pNewBuffer;
 	static PWAVEHDR     pWaveHdr1, pWaveHdr2;
 	static TCHAR        szOpenError[] = TEXT("Error opening waveform audio!");
 	static TCHAR        szMemError[] = TEXT("Error allocating memory!");
 	static WAVEFORMATEX waveform;
 
+
 	switch (message)
 	{
-		// when starting the dialog box
-	case WM_INITDIALOG:
-		// Allocate memory for wave header
+	case WM_CREATE:
 
-		pWaveHdr1 = GlobalAlloc(GMEM_FIXED | GMEM_SHARE, sizeof(WAVEHDR));
-		pWaveHdr2 = GlobalAlloc(GMEM_FIXED | GMEM_SHARE, sizeof(WAVEHDR));
+		pWaveHdr1 = (PWAVEHDR)malloc(sizeof(WAVEHDR));
+		pWaveHdr2 = (PWAVEHDR)malloc(sizeof(WAVEHDR));
 
 		// Allocate memory for save buffer
 
-		pSaveBuffer = GlobalAlloc(GMEM_FIXED | GMEM_SHARE, 1); // final data
-		return TRUE;
+		pSaveBuffer = (PBYTE)malloc(1);
+
+		wndHwnd.hwnd = hwnd;
+
+		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
@@ -64,20 +180,19 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		case IDC_RECORD_BEG:
 			// Allocate buffer memory
 
-			pBuffer1 = GlobalAlloc(GMEM_FIXED | GMEM_SHARE, INP_BUFFER_SIZE); // Sets a size to fill
-			pBuffer2 = GlobalAlloc(GMEM_FIXED | GMEM_SHARE, INP_BUFFER_SIZE);
+			pBuffer1 = (PBYTE)malloc(INP_BUFFER_SIZE);
+			pBuffer2 = (PBYTE)malloc(INP_BUFFER_SIZE);
 
-			if (!pBuffer1 || !pBuffer2) // if the malloc didn't work
+			if (!pBuffer1 || !pBuffer2)
 			{
-				if (pBuffer1) GlobalFree(pBuffer1); // clear the one that worked
-				if (pBuffer2) GlobalFree(pBuffer2); // if either did
+				if (pBuffer1) free(pBuffer1);
+				if (pBuffer2) free(pBuffer2);
 
 				MessageBeep(MB_ICONEXCLAMATION);
 				MessageBox(hwnd, szMemError, szAppName,
 					MB_ICONEXCLAMATION | MB_OK);
 				return TRUE;
 			}
-			// Otherwise continue
 
 			// Open waveform audio for input
 
@@ -92,23 +207,15 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			if (waveInOpen(&hWaveIn, WAVE_MAPPER, &waveform,
 				(DWORD)hwnd, 0, CALLBACK_WINDOW))
 			{
-					/*
-						&hWvaeIn:		device handle for the recording
-						WAVE_MAPPER		device identifier
-						&waveform		pointer to WAVEFORMATEX struct (format)
-						hwnd			pointer to handle
-						0				callback name
-						CALLBACK_WINDOW	flag to open device (window handle for here)
-					*/
-				GlobalFree(pBuffer1);
-				GlobalFree(pBuffer2);
+				free(pBuffer1);
+				free(pBuffer2);
 				MessageBeep(MB_ICONEXCLAMATION);
 				MessageBox(hwnd, szOpenError, szAppName,
 					MB_ICONEXCLAMATION | MB_OK);
 			}
 			// Set up headers and prepare them
 
-			pWaveHdr1->lpData = pBuffer1;
+			pWaveHdr1->lpData = (LPSTR)pBuffer1;
 			pWaveHdr1->dwBufferLength = INP_BUFFER_SIZE;
 			pWaveHdr1->dwBytesRecorded = 0;
 			pWaveHdr1->dwUser = 0;
@@ -119,7 +226,7 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 
 			waveInPrepareHeader(hWaveIn, pWaveHdr1, sizeof(WAVEHDR));
 
-			pWaveHdr2->lpData = pBuffer2;
+			pWaveHdr2->lpData = (LPSTR)pBuffer2;
 			pWaveHdr2->dwBufferLength = INP_BUFFER_SIZE;
 			pWaveHdr2->dwBytesRecorded = 0;
 			pWaveHdr2->dwUser = 0;
@@ -135,7 +242,7 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			// Reset input to return last buffer
 
 			bEnding = TRUE;
-			waveInReset(hWaveIn); // stops input and resets curretn position to zero
+			waveInReset(hWaveIn);
 			return TRUE;
 
 		case IDC_PLAY_BEG:
@@ -152,14 +259,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			if (waveOutOpen(&hWaveOut, WAVE_MAPPER, &waveform,
 				(DWORD)hwnd, 0, CALLBACK_WINDOW))
 			{
-					/*
-						&hWaveOut		device handle for playing
-						WAVE_MAPPER		device identifier
-						&waveform		pointer to WAVEFORMATEX struct
-						hwnd			callback mech (hwnd to window here)
-						0				callback instance (not with window callback mechanism)
-						CALLBACK_WINDOW	flag for opening the device
-					*/
 				MessageBeep(MB_ICONEXCLAMATION);
 				MessageBox(hwnd, szOpenError, szAppName,
 					MB_ICONEXCLAMATION | MB_OK);
@@ -169,18 +268,16 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		case IDC_PLAY_PAUSE:
 			// Pause or restart output
 
-			// Depends on button press
-
 			if (!bPaused)
 			{
 				waveOutPause(hWaveOut);
-				//SetDlgItemText(hwnd, IDC_PLAY_PAUSE, TEXT("Resume"));
+				SetDlgItemText(hwnd, IDC_PLAY_PAUSE, TEXT("Resume"));
 				bPaused = TRUE;
 			}
 			else
 			{
 				waveOutRestart(hWaveOut);
-				//SetDlgItemText(hwnd, IDC_PLAY_PAUSE, TEXT("Pause"));
+				SetDlgItemText(hwnd, IDC_PLAY_PAUSE, TEXT("Pause"));
 				bPaused = FALSE;
 			}
 			return TRUE;
@@ -193,9 +290,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			return TRUE;
 
 		case IDC_PLAY_REV:
-			// NOT NEEDED //
-			////////////////
-
 			// Reverse save buffer and play
 
 			bReverse = TRUE;
@@ -205,9 +299,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			return TRUE;
 
 		case IDC_PLAY_REP:
-			// NOT NEEDED //
-			////////////////
-
 			// Set infinite repetitions and play
 
 			dwRepetitions = -1;
@@ -215,9 +306,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			return TRUE;
 
 		case IDC_PLAY_SPEED:
-			// NOT NEEDED //
-			////////////////
-
 			// Open waveform audio for fast output
 
 			waveform.wFormatTag = WAVE_FORMAT_PCM;
@@ -236,17 +324,32 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 					MB_ICONEXCLAMATION | MB_OK);
 			}
 			return TRUE;
+		case IDC_VOLUME_DOWN:
+			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR) {
+				int value = LOWORD(dwVolume);
+				DWORD temp = MAKELONG(value, value);
+				waveOutSetVolume(NULL, temp);
+			}
+			return TRUE;
+		case IDC_VOLUME_UP:
+			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR) {
+				waveOutSetVolume(NULL, dwVolume);
+			}
+			return TRUE;
+		case IDC_VOLUME_MUTE:
+			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR)
+				waveOutSetVolume(NULL, 0); // mute volume
+			return TRUE;
 		}
 		break;
 
 	case MM_WIM_OPEN:
 		// Shrink down the save buffer
 
-		pSaveBuffer = GlobalReAlloc(pSaveBuffer, 1, GMEM_ZEROINIT);
+		pSaveBuffer = (PBYTE)realloc(pSaveBuffer, 1);
 
 		// Enable and disable Buttons
 
-		/*
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_BEG), FALSE);
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_END), TRUE);
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_BEG), FALSE);
@@ -256,7 +359,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_REP), FALSE);
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_SPEED), FALSE);
 		SetFocus(GetDlgItem(hwnd, IDC_RECORD_END));
-		*/
 
 		// Add the buffers
 
@@ -275,8 +377,8 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 
 		// Reallocate save buffer memory
 
-		pNewBuffer = GlobalReAlloc(pSaveBuffer, dwDataLength +
-			((PWAVEHDR)lParam)->dwBytesRecorded, GMEM_ZEROINIT);
+		pNewBuffer = (PBYTE)realloc(pSaveBuffer, dwDataLength +
+			((PWAVEHDR)lParam)->dwBytesRecorded);
 
 		if (pNewBuffer == NULL)
 		{
@@ -310,17 +412,15 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		waveInUnprepareHeader(hWaveIn, pWaveHdr1, sizeof(WAVEHDR));
 		waveInUnprepareHeader(hWaveIn, pWaveHdr2, sizeof(WAVEHDR));
 
-		GlobalFree(pBuffer1);
-		GlobalFree(pBuffer2);
+		free(pBuffer1);
+		free(pBuffer2);
 
 		// Enable and disable buttons
-		/*
+
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_BEG), TRUE);
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_END), FALSE);
 		SetFocus(GetDlgItem(hwnd, IDC_RECORD_BEG));
-		*/
 
-		/*
 		if (dwDataLength > 0)
 		{
 			EnableWindow(GetDlgItem(hwnd, IDC_PLAY_BEG), TRUE);
@@ -331,8 +431,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 			EnableWindow(GetDlgItem(hwnd, IDC_PLAY_SPEED), TRUE);
 			SetFocus(GetDlgItem(hwnd, IDC_PLAY_BEG));
 		}
-		*/
-
 		bRecording = FALSE;
 
 		if (bTerminating)
@@ -342,7 +440,7 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 
 	case MM_WOM_OPEN:
 		// Enable and disable buttons
-		/*
+
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_BEG), FALSE);
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_END), FALSE);
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_BEG), FALSE);
@@ -352,10 +450,10 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_REV), FALSE);
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_SPEED), FALSE);
 		SetFocus(GetDlgItem(hwnd, IDC_PLAY_END));
-		*/
+
 		// Set up header
 
-		pWaveHdr1->lpData = pSaveBuffer;
+		pWaveHdr1->lpData = (LPSTR)pSaveBuffer;
 		pWaveHdr1->dwBufferLength = dwDataLength;
 		pWaveHdr1->dwBytesRecorded = 0;
 		pWaveHdr1->dwUser = 0;
@@ -380,7 +478,7 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 
 	case MM_WOM_CLOSE:
 		// Enable and disable buttons
-		/*
+
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_BEG), TRUE);
 		EnableWindow(GetDlgItem(hwnd, IDC_RECORD_END), TRUE);
 		EnableWindow(GetDlgItem(hwnd, IDC_PLAY_BEG), TRUE);
@@ -392,7 +490,6 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 		SetFocus(GetDlgItem(hwnd, IDC_PLAY_BEG));
 
 		SetDlgItemText(hwnd, IDC_PLAY_PAUSE, TEXT("Pause"));
-		*/
 		bPaused = FALSE;
 		dwRepetitions = 1;
 		bPlaying = FALSE;
@@ -428,33 +525,17 @@ __declspec(dllexport) BOOL CALLBACK DlgProc(HWND hwnd, UINT message, WPARAM wPar
 				return TRUE;
 			}
 
-			GlobalFree(pWaveHdr1);
-			GlobalFree(pWaveHdr2);
-			GlobalFree(pSaveBuffer);
+			free(pWaveHdr1);
+			free(pWaveHdr2);
+			free(pSaveBuffer);
 			EndDialog(hwnd, 0);
 			return TRUE;
 		}
 		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
 	}
-	return FALSE;
-}
-
-__declspec(dllexport) void recStart(HWND handle){
-	// Send a message to run the DlgProc with a startRec message
-	DlgProc(handle, WM_COMMAND, 1000, 0);
-}
-
-__declspec(dllexport) void recStop(HWND handle) {
-	// Send a message to run the DlgProc with a stopRec message
-	DlgProc(handle, WM_COMMAND, 1001, 0);
-}
-
-__declspec(dllexport) void playStart(HWND handle){
-	// Send a message to run the DlgProc with a startPlay message
-	DlgProc(handle, WM_COMMAND, 1002, 0);
-}
-
-__declspec(dllexport) void playEnd(HWND handle){
-	// Send a message to run the DlgProc with a stopPlaying message
-	DlgProc(handle, WM_COMMAND, 1003, 0);
+	return DefWindowProc(hwnd, message, wParam, lParam);
 }
