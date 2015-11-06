@@ -1,6 +1,12 @@
 #pragma once
-#ifndef STDAFX_H
-//#include "targetver.h"
+#ifndef HEADER
+#define HEADER
+
+/*
+	Spencer Pollock
+	A00924319
+*/
+
 #include <windows.h>
 #define INP_BUFFER_SIZE 16384
 #define IDC_RECORD_BEG 1001
@@ -31,11 +37,10 @@ struct Data {
 static TCHAR szAppName[] = TEXT("HelloWin");
 static windHandle wndHwnd;
 static Data data;
-static DWORD dwVolume;
+static DWORD dwDataLength;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-//INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-//int CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 extern "C" EXPORT int startProg(HINSTANCE hInstance);
 extern "C" EXPORT int sendQuit();
 extern "C" EXPORT int sendRec();
@@ -43,8 +48,9 @@ extern "C" EXPORT int sendStopRec();
 extern "C" EXPORT int sendPlay();
 extern "C" EXPORT int sendPlayStop();
 extern "C" EXPORT int sendPlayPause();
-extern "C" EXPORT void getByteData();
-extern "C" EXPORT double getDataSize();
+extern "C" EXPORT void getByteData(BYTE *);
+extern "C" EXPORT void setByteData(BYTE *);
+extern "C" EXPORT int getDataSize();
 extern "C" EXPORT int sendVolumeUp();
 extern "C" EXPORT int sendVolumeDown();
 

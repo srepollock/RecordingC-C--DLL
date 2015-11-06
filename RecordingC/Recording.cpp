@@ -1,6 +1,11 @@
 #include "Header.h"
 #include <SDKDDKVer.h>
 
+/*
+	Spencer Pollock
+	A00924319
+*/
+
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
 	LPVOID lpReserved
@@ -19,14 +24,21 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 extern "C" {
 
-	EXPORT PBYTE getByteData() {
-		return pSaveBuffer;
+	EXPORT void getByteData(BYTE * pointer) {
+		for (int i = 0; i < (int)dwDataLength; i++) {
+			pointer[i] = pSaveBuffer[i];
+		}
 	}
 
-	EXPORT double getDataSize() {
-		double n;
-		//n = 
-		return n;
+	EXPORT void setByteData(BYTE * p) {
+		// set bytes to the data
+		for (int i = 0; i < (int)dwDataLength; i++) {
+			pSaveBuffer[i] = p[i]; // saved memory and cannot write
+		}
+	}
+
+	EXPORT int getDataSize() {
+		return (int)dwDataLength;
 	}
 
 	EXPORT int sendRec() {
@@ -150,7 +162,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	static BOOL         bRecording, bPlaying, bReverse, bPaused,
 		bEnding, bTerminating;
-	static DWORD        dwDataLength, dwRepetitions = 1;
+	static DWORD        dwRepetitions = 1;
 	static HWAVEIN      hWaveIn;
 	static HWAVEOUT     hWaveOut;
 	static PWAVEHDR     pWaveHdr1, pWaveHdr2;
@@ -325,20 +337,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			return TRUE;
 		case IDC_VOLUME_DOWN:
-			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR) {
-				int value = LOWORD(dwVolume);
-				DWORD temp = MAKELONG(value, value);
-				waveOutSetVolume(NULL, temp);
-			}
-			return TRUE;
 		case IDC_VOLUME_UP:
-			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR) {
-				waveOutSetVolume(NULL, dwVolume);
-			}
-			return TRUE;
 		case IDC_VOLUME_MUTE:
-			if (waveOutGetVolume(NULL, &dwVolume) == MMSYSERR_NOERROR)
-				waveOutSetVolume(NULL, 0); // mute volume
 			return TRUE;
 		}
 		break;
